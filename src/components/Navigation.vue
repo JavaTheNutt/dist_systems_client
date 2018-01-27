@@ -4,7 +4,7 @@
       <v-toolbar-side-icon @click.stop="drawerShown = !drawerShown"/>
       <v-toolbar-title>Reservation System</v-toolbar-title>
       <v-spacer/>
-      <v-btn color="accent" @click.stop="showLogin">Login</v-btn>
+      <v-btn color="accent" @click.stop="showLogin" v-if="!loggedIn">Login</v-btn>
       <v-toolbar-items class="hidden-sm-and-down" v-if="false">
 
         <v-btn flat  v-if="false">Link Two</v-btn>
@@ -39,6 +39,8 @@
 </template>
 <script>
   import Bus from '@/events/Bus';
+  import { mapGetters } from 'vuex';
+  import types from '@/store/types';
   export default {
     name: 'navigation',
     data () {
@@ -50,6 +52,9 @@
       showLogin () {
         Bus.$emit('show-dialog', { card: 'login-card' });
       }
+    },
+    computed: {
+      ...mapGetters({ loggedIn: types.authTypes.getters.isLoggedIn })
     }
   };
 </script>

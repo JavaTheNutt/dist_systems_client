@@ -109,8 +109,9 @@
       async submitClicked () {
         console.log('submit clicked event caught in login form');
         this.loading = true;
-        await login(this.submissionDetails.email, this.submissionDetails.password);
+        const result = await login(this.submissionDetails.email, this.submissionDetails.password);
         this.loading = false;
+        if (result) this.closeClicked();
       }
     },
     components: { SubmitFormButtonGroup },
