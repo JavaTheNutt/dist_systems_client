@@ -60,6 +60,15 @@
               id="confirmPasswordField"
             />
           </v-flex>
+          <v-flex v-if="createAccountTicked">
+            <v-checkbox label="Request admin status?"
+                        v-model="submissionDetails.requestAdminStatus"
+                        color="info"
+                        :value="true"
+                        hide-details
+                        id="requestAdminStatusCheckbox"
+            />
+          </v-flex>
           <v-flex>
             <v-checkbox label="Create new account?"
                         v-model="createAccountTicked"
@@ -77,7 +86,7 @@
               :has-close="true"
               @close-clicked="closeClicked"
               @submit-clicked="submitClicked"
-              @reset-clicked="resetClicked"
+              @reset-clicked="resetForm"
             />
           </v-flex>
         </v-layout>
@@ -87,17 +96,17 @@
 </template>
 <script>
   import SubmitFormButtonGroup from './SubmitFormButtonGroup';
+  import FormMixin from '../Mixins/Form';
 
   export default {
+    mixins: [FormMixin],
     methods: {
       closeClicked () {
-
+        console.log('close clicked event caught in login form');
+        this.$emit('dialog-closed');
       },
       submitClicked () {
-
-      },
-      resetClicked () {
-
+        console.log('submit clicked event caught in login form');
       }
     },
     components: { SubmitFormButtonGroup },
@@ -106,7 +115,8 @@
       return {
         submissionDetails: {
           email: '',
-          password: ''
+          password: '',
+          requestAdminStatus: false
         },
         createAccountTicked: false,
         confirmPassword: '',
@@ -133,14 +143,17 @@
       },
       formHasTextValues () {
         console.log('evaluating form has values');
-        return Object.values(this.submissionDetails).reduce((index, elem) => index + elem) > 0;
+        return Object.values(this.submissionDetails)
+          .filter(elem => typeof elem === 'string')
+        .map(elem => elem.length)
+        .reduce((index, elem) => index += elem, 0) > 0;
         // return this.submissionDetails.email.length + this.submissionDetails.password.length + this.confirmPassword.length > 0;
       },
       formHasErrors () {
         return this.errors.any();
       },
       nonTextFieldsInteractedWith () {
-        return !this.createAccountTicked;
+        return this.createAccountTicked;
       },
       formHasValues () {
         return this.formHasTextValues || this.nonTextFieldsInteractedWith || this.formHasErrors;
