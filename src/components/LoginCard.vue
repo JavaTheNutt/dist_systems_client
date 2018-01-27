@@ -97,6 +97,7 @@
 <script>
   import SubmitFormButtonGroup from './SubmitFormButtonGroup';
   import FormMixin from '../Mixins/Form';
+  import { login } from '../service/authService';
 
   export default {
     mixins: [FormMixin],
@@ -105,8 +106,11 @@
         console.log('close clicked event caught in login form');
         this.$emit('dialog-closed');
       },
-      submitClicked () {
+      async submitClicked () {
         console.log('submit clicked event caught in login form');
+        this.loading = true;
+        await login(this.submissionDetails.email, this.submissionDetails.password);
+        this.loading = false;
       }
     },
     components: { SubmitFormButtonGroup },
