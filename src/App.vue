@@ -1,6 +1,9 @@
 <template>
   <v-app light>
     <navigation/>
+    <v-content>
+      <router-view/>
+    </v-content>
     <generic-dialog/>
   </v-app>
 </template>
