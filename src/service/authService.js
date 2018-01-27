@@ -26,6 +26,21 @@ export const login = async (username, password) => {
 };
 export const logOut = () => store.commit(types.authTypes.mutations.LOG_OUT);
 
+export const acceptAdminRequest = async id => {
+  console.log('attempting to accept ', id, 'as admin');
+  const result = await http.put(`http://localhost:3000/user/${id}/setAdmin`, {
+    auth: store.getters[types.authTypes.getters.getAuthDetails]
+  });
+  console.log('result', result);
+};
+export const rejectAdminRequest = async id => {
+  console.log('attempting to accept ', id, 'as admin');
+  const result = await http.put(`http://localhost:3000/user/${id}/refuseAdminRequest`, {
+    auth: store.getters[types.authTypes.getters.getAuthDetails]
+  });
+  console.log('result', result);
+};
+
 const handleAdmin = responseData => {
   console.log('handling admin response for ', responseData);
   const adminRequests = responseData.adminRequests.data;

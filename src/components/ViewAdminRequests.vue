@@ -14,10 +14,10 @@
             <td>{{props.item.email}}</td>
             <td>{{props.item.mobile}}</td>
             <td class="justify-center layout px-0">
-              <v-btn icon class="mx-0" @click="acceptUser(props.item)">
+              <v-btn icon class="mx-0" @click="acceptUserClicked(props.item)">
                 <v-icon color="success">check_circle</v-icon>
               </v-btn>
-              <v-btn icon class="mx-0" @click="rejectUser(props.item)">
+              <v-btn icon class="mx-0" @click="rejectUserClicked(props.item)">
                 <v-icon color="error">close</v-icon>
               </v-btn>
             </td>
@@ -30,12 +30,14 @@
 <script>
   import { mapGetters } from 'vuex';
   import types from '@/store/types';
+  import { acceptAdminRequest, rejectAdminRequest } from '../service/authService';
+
   export default {
     name: 'view-admin-requests',
     computed: {
       ...mapGetters({ adminRequests: types.adminTypes.getters.getMappedAdminRequests }),
       hasData () {
-        return this.adminRequests.length > 0;
+        return this.adminRequests && this.adminRequests.length > 0;
       }
     },
     data () {
@@ -59,11 +61,22 @@
       };
     },
     methods: {
-      acceptUser (user) {
+      async acceptUserClicked (user) {
         console.log('accepting user', user);
+        await acceptAdminRequest(user.id);
       },
-      rejectUser (user) {
+      acceptAsAdmin () {
+        console.log('accept as admin function triggered');
+      },
+      rejectAsAdmin () {
+        console.log('reject user as admin function triggered');
+      },
+      hideAdminRequest (user) {
+        console.log('admin request hidden');
+      },
+      async rejectUserClicked (user) {
         console.log('rejecting user', user);
+        await rejectAdminRequest(user.id);
       }
     }
   };

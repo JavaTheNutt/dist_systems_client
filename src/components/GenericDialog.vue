@@ -1,11 +1,21 @@
 <template>
   <v-dialog v-model="dialogShown" :max-width="width" ref="genericDialog" :persistent="persistent">
-    <component :is="currentCard" @dialog-closed="dialogShown = false" ref="currentComponent" @cache-state="cacheState" @revert-state="revertState" :init-data="formInitData"/>
+    <component
+      :is="currentCard"
+      @dialog-closed="dialogShown = false"
+      ref="currentComponent"
+      @cache-state="cacheState"
+      @revert-state="revertState"
+      :init-data="formInitData"
+      :accept="acceptFunction"
+      :reject="rejectFunction"
+    />
   </v-dialog>
 </template>
 <script>
   import Bus from '@/events/Bus';
   import LoginCard from './LoginCard';
+  import GenericAcceptRejectCard from './GenericAcceptRejectCard';
 
   export default {
     name: 'generic-dialog',
@@ -19,7 +29,11 @@
           component: '',
           data: {}
         },
-        formInitData: {}
+        acceptFunction: null,
+        rejectFunction: null,
+        formInitData: {},
+        cardTitle: '',
+        cardText: ''
       };
     },
     watch: {
@@ -33,7 +47,7 @@
         }
       }
     },
-    components: { LoginCard },
+    components: { LoginCard, GenericAcceptRejectCard },
     methods: {
       cacheState (state) {
         this.cachedState.component = this.currentCard;
@@ -57,6 +71,10 @@
         this.width = params.width || '700px';
         this.dialogShown = true;
         this.persistent = params.persistent || false;
+        this.acceptFunction = params.accept;
+        this.rejectFunction = params.reject;
+        this.cardText = params.text || '';
+        this.cardTitle = params.title || '';
       });
     }
   };
