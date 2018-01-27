@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import store from './store';
 import VeeValidate from 'vee-validate';
 import 'vuetify/dist/vuetify.css';
 
@@ -24,5 +25,6 @@ Vue.config.productionTip = false;
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
 });
