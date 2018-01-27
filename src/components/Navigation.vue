@@ -1,15 +1,20 @@
 <template>
   <div>
     <v-toolbar dark color="primary">
-      <v-toolbar-side-icon @click.stop="drawerShown = !drawerShown"/>
+      <v-toolbar-side-icon @click.stop="drawerShown = !drawerShown" v-if="loggedIn"/>
       <v-toolbar-title>Reservation System</v-toolbar-title>
       <v-spacer/>
       <v-btn color="accent" @click.stop="showLogin" v-if="!loggedIn">Login</v-btn>
-      <v-toolbar-items class="hidden-sm-and-down" v-if="false">
-
-        <v-btn flat  v-if="false">Link Two</v-btn>
-        <v-btn flat  >Link Three</v-btn>
-      </v-toolbar-items>
+      <v-menu bottom left v-if="loggedIn" id="openSignOutMenu">
+      <v-btn icon slot="activator" dark>
+        <v-icon >more_vert</v-icon>
+      </v-btn>
+      <v-list>
+        <v-list-tile @click.stop="logOutClicked" id="clickSignOut">
+          <v-list-tile-title >Sign Out</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+      </v-menu>
     </v-toolbar>
     <v-navigation-drawer
       temporary
@@ -41,6 +46,8 @@
   import Bus from '@/events/Bus';
   import { mapGetters } from 'vuex';
   import types from '@/store/types';
+  import { logOut } from '../service/authService';
+
   export default {
     name: 'navigation',
     data () {
@@ -51,6 +58,9 @@
     methods: {
       showLogin () {
         Bus.$emit('show-dialog', { card: 'login-card' });
+      },
+      logOutClicked () {
+        logOut();
       }
     },
     computed: {

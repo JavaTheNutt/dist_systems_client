@@ -9,5 +9,13 @@ export default {
       password,
       admin
     };
+  },
+  [types.mutations.LOG_OUT]: state => {
+    state.loggedIn = false;
+    state.userDetails = {
+      username: '',
+      password: '',
+      admin: false
+    };
   }
 };

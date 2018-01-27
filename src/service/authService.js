@@ -23,3 +23,4 @@ export const login = async (username, password) => {
   }
   return false;
 };
+export const logOut = () => store.commit(types.authTypes.mutations.LOG_OUT);
