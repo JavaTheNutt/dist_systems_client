@@ -10,8 +10,8 @@
           <template slot="items" slot-scope="props">
             <td>{{props.item.fname}}</td>
             <td>{{props.item.sname}}</td>
-            <td>{{props.item.role}}</td>
             <td>{{props.item.email}}</td>
+            <td>{{props.item.role}}</td>
             <td>{{props.item.mobile}}</td>
             <td class="justify-center layout px-0">
               <v-btn icon class="mx-0" @click="acceptUserClicked(props.item)">
@@ -19,6 +19,9 @@
               </v-btn>
               <v-btn icon class="mx-0" @click="rejectUserClicked(props.item)">
                 <v-icon color="error">close</v-icon>
+              </v-btn>
+              <v-btn icon class="mx-0" @click="hideAdminRequestClicked(props.item)">
+                <v-icon>visibility_off</v-icon>
               </v-btn>
             </td>
           </template>
@@ -28,7 +31,7 @@
   </v-container>
 </template>
 <script>
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapMutations } from 'vuex';
   import types from '@/store/types';
   import { acceptAdminRequest, rejectAdminRequest } from '../service/authService';
 
@@ -57,27 +60,34 @@
         }, {
           text: 'Mobile Number',
           value: 'mobile'
-        }]
+        }],
+        currentRequests: []
       };
     },
     methods: {
+      ...mapMutations({ hideAdminRequest: types.adminTypes.mutations.REMOVE_ADMIN_REQUEST }),
       async acceptUserClicked (user) {
         console.log('accepting user', user);
         await acceptAdminRequest(user.id);
+        this.hideAdminRequestClicked(user);
       },
-      acceptAsAdmin () {
-        console.log('accept as admin function triggered');
-      },
-      rejectAsAdmin () {
-        console.log('reject user as admin function triggered');
-      },
-      hideAdminRequest (user) {
+      hideAdminRequestClicked (user) {
         console.log('admin request hidden');
+        this.hideAdminRequest(user.id);
+        this.refreshRequests();
       },
       async rejectUserClicked (user) {
         console.log('rejecting user', user);
         await rejectAdminRequest(user.id);
+        this.hideAdminRequestClicked(user);
+      },
+      refreshRequests () {
+        console.log('refreshing current requests');
+        this.currentRequests = Object.assign([], this.$store.getters[types.adminTypes.getters.getMappedAdminRequests]);
       }
+    },
+    mounted () {
+      this.refreshRequests();
     }
   };
 </script>
