@@ -1,3 +1,4 @@
 export default {
-  adminRequests: []
+  adminRequests: [],
+  facilitiesRequests: []
 };

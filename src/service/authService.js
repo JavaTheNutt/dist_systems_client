@@ -1,6 +1,6 @@
 import http from '../http';
 import store from '../store';
-import router from '../router';
+// import router from '../router';
 import types from '../store/types';
 export const test = async () => {
   console.log('testing backend');
@@ -44,8 +44,13 @@ export const rejectAdminRequest = async id => {
 const handleAdmin = responseData => {
   console.log('handling admin response for ', responseData);
   const adminRequests = responseData.adminRequests.data;
-  if (adminRequests.length > 0) {
-    store.commit(types.adminTypes.mutations.SET_ADMIN_REQUESTS, adminRequests);
-    router.push('/admin/requests');
+  console.log('admin requests', adminRequests);
+  if (adminRequests.admins.length > 0) {
+    console.log('has admin requests');
+    store.commit(types.adminTypes.mutations.SET_ADMIN_REQUESTS, adminRequests.admins);
+  }
+  if (adminRequests.facilities.length > 0) {
+    console.log('has facilities requests');
+    store.commit(types.adminTypes.mutations.SET_FACILITIES_REQUESTS, adminRequests.facilities);
   }
 };

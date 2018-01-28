@@ -18,11 +18,31 @@ export const getPendingRequests = async () => {
   console.log('result', result);
   handleAdmin(result);
 };
+export const confirmFacility = async id => {
+  console.log('making request to confirm facility with id', id);
+  const result = await http.put(`http://localhost:3000/facility/${id}/confirm`, {
+    auth: store.getters[types.authTypes.getters.getAuthDetails]
+  });
+  console.log(result);
+};
+export const rejectFacility = async id => {
+  console.log('making request to reject facility with id', id);
+  const result = await http.put(`http://localhost:3000/facility/${id}/reject`, {
+    auth: store.getters[types.authTypes.getters.getAuthDetails]
+  });
+  console.log(result);
+};
+
 const handleAdmin = responseData => {
   console.log('handling admin response for ', responseData);
   const adminRequests = responseData.data;
-  console.log('current admin requests', adminRequests);
-  if (adminRequests.length > 0) {
-    store.commit(types.adminTypes.mutations.SET_ADMIN_REQUESTS, adminRequests);
+  console.log('current admin requests', adminRequests.admins);
+  if (adminRequests.admins.length > 0) {
+    console.log('has facilities requests');
+    store.commit(types.adminTypes.mutations.SET_ADMIN_REQUESTS, adminRequests.admins);
+  }
+  if (adminRequests.facilities.length > 0) {
+    console.log('has facilities requests');
+    store.commit(types.adminTypes.mutations.SET_FACILITIES_REQUESTS, adminRequests.facilities);
   }
 };

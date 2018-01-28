@@ -9,5 +9,6 @@ export default {
     role: elem.u_role,
     mobile: elem.u_mobileNo,
     id: elem.id
-  }))
+  })),
+  [types.getters.getMappedFacilitiesRequests]: state => state.facilitiesRequests.map(elem => ({ name: elem.f_name, id: elem.id }))
 };
