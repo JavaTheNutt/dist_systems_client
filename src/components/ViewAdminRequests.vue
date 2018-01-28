@@ -1,6 +1,20 @@
 <template>
   <v-container fluid>
-    <v-layout>
+    <v-layout column v-if="!hasAdminRequests" class="text-xs-center">
+      <v-flex v-if="!loading">
+        <h3 class="headline mb-0">You have no requests to deal with</h3>
+      </v-flex>
+      <v-flex v-if="!loading">
+        <v-btn fab @click="refreshRequests"><v-icon>refresh</v-icon></v-btn>
+      </v-flex>
+      <v-flex v-if="loading">
+        <v-progress-circular indeterminate color="primary"/>
+      </v-flex>
+    </v-layout>
+    <v-layout column v-if="hasAdminRequests">
+      <v-flex>
+        <h3 class="headline mb-0">Admin requests</h3>
+      </v-flex>
       <v-flex>
         <v-data-table
           :headers="headers"
@@ -34,12 +48,13 @@
   import { mapGetters, mapMutations } from 'vuex';
   import types from '@/store/types';
   import { acceptAdminRequest, rejectAdminRequest } from '../service/authService';
+  import { getPendingRequests } from '../service/dataService';
 
   export default {
     name: 'view-admin-requests',
     computed: {
       ...mapGetters({ adminRequests: types.adminTypes.getters.getMappedAdminRequests }),
-      hasData () {
+      hasAdminRequests () {
         return this.adminRequests && this.adminRequests.length > 0;
       }
     },
@@ -61,7 +76,7 @@
           text: 'Mobile Number',
           value: 'mobile'
         }],
-        currentRequests: []
+        loading: false
       };
     },
     methods: {
@@ -74,20 +89,18 @@
       hideAdminRequestClicked (user) {
         console.log('admin request hidden');
         this.hideAdminRequest(user.id);
-        this.refreshRequests();
       },
       async rejectUserClicked (user) {
         console.log('rejecting user', user);
         await rejectAdminRequest(user.id);
         this.hideAdminRequestClicked(user);
       },
-      refreshRequests () {
+      async refreshRequests () {
         console.log('refreshing current requests');
-        this.currentRequests = Object.assign([], this.$store.getters[types.adminTypes.getters.getMappedAdminRequests]);
+        this.loading = true;
+        await getPendingRequests();
+        this.loading = false;
       }
-    },
-    mounted () {
-      this.refreshRequests();
     }
   };
 </script>
