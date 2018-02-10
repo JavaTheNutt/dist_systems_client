@@ -7,8 +7,10 @@
       @cache-state="cacheState"
       @revert-state="revertState"
       :init-data="formInitData"
-      :accept="acceptFunction"
-      :reject="rejectFunction"
+      @accept="acceptClicked"
+      @reject="rejectClicked"
+      :cardTitle="cardTitle"
+      :cardText="cardText"
     />
   </v-dialog>
 </template>
@@ -29,11 +31,13 @@
           component: '',
           data: {}
         },
-        acceptFunction: null,
-        rejectFunction: null,
+        accept () {},
+        reject () {},
         formInitData: {},
         cardTitle: '',
-        cardText: ''
+        cardText: '',
+        acceptEventTitle: '',
+        rejectEventTitle: ''
       };
     },
     watch: {
@@ -61,6 +65,14 @@
         this.persistent = this.cachedState.persistent;
         this.currentCard = this.cachedState.component;
         this.cachedState = {};
+      },
+      acceptClicked () {
+        if (this.acceptEventTitle.length > 0) Bus.$emit(this.acceptEventTitle);
+        this.accept();
+      },
+      rejectClicked () {
+        if (this.rejectEventTitle.length > 0) Bus.$emit(this.rejectEventTitle);
+        this.reject();
       }
     },
     mounted () {
@@ -71,10 +83,12 @@
         this.width = params.width || '700px';
         this.dialogShown = true;
         this.persistent = params.persistent || false;
-        this.acceptFunction = params.accept;
-        this.rejectFunction = params.reject;
+        this.acceptFunction = params.accept || function () {};
+        this.rejectFunction = params.reject || function () {};
         this.cardText = params.text || '';
         this.cardTitle = params.title || '';
+        this.acceptEventTitle = params.acceptTitle || '';
+        this.rejectEventTitle = params.rejectTitle || '';
       });
     }
   };
