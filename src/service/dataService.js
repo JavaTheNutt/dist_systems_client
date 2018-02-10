@@ -18,6 +18,14 @@ export const getPendingRequests = async () => {
   console.log('result', result);
   handleAdmin(result);
 };
+export const getUsers = async () => {
+  console.log('request recieved to fetch all users');
+  const result = await http.get('http://localhost:3000/users', {
+    auth: store.getters[types.authTypes.getters.getAuthDetails]
+  });
+  console.log('result', result);
+  return result;
+};
 export const confirmFacility = async id => {
   console.log('making request to confirm facility with id', id);
   const result = await http.put(`http://localhost:3000/facility/${id}/confirm`, {
