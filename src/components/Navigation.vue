@@ -4,6 +4,9 @@
       <v-toolbar-side-icon @click.stop="drawerShown = !drawerShown" v-if="loggedIn"/>
       <v-toolbar-title>Reservation System</v-toolbar-title>
       <v-spacer/>
+      <v-btn icon v-if="showRequests" @click.stop="$router.push('/admin/requests')">
+        <v-icon color="accent">announcements</v-icon>
+      </v-btn>
       <v-btn color="accent" @click.stop="showLogin" v-if="!loggedIn">Login</v-btn>
       <v-menu bottom left v-if="loggedIn" id="openSignOutMenu">
       <v-btn icon slot="activator" dark>
@@ -23,21 +26,31 @@
       absolute
     >
       <v-list class="pt-0">
-        <!--<v-divider></v-divider>
-        <v-list-tile v-for="item in items" :key="item.title" @click="redirect(item.path)" :id="`link-${item.title}`">
+        <v-divider></v-divider>
+        <v-list-tile @click.stop="$router.push('/')">
           <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>home</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            <v-list-tile-title>Home</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-spacer style="height: 100%"></v-spacer>
-        <v-list-tile style="bottom: 0" @click="shown = !shown" id="sideNavFooter">
+        <v-list-tile v-if="admin" @click.stop="$router.push('/admin/requests')">
+          <v-list-tile-action>
+            <v-icon>announcements</v-icon>
+          </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>Joe Wemyss {{new Date().getFullYear()}}</v-list-tile-title>
+            <v-list-tile-title>Requests</v-list-tile-title>
           </v-list-tile-content>
-        </v-list-tile>-->
+        </v-list-tile>
+        <v-list-tile v-if="admin" @click.stop="$router.push('/admin/users')">
+          <v-list-tile-action>
+            <v-icon>supervisor_account</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Users</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
   </div>
@@ -64,7 +77,10 @@
       }
     },
     computed: {
-      ...mapGetters({ loggedIn: types.authTypes.getters.isLoggedIn })
+      showRequests () {
+        return this.loggedIn && this.admin && this.hasRequests;
+      },
+      ...mapGetters({ loggedIn: types.authTypes.getters.isLoggedIn, admin: types.authTypes.getters.isAdmin, hasRequests: types.adminTypes.getters.hasRequests })
     }
   };
 </script>
