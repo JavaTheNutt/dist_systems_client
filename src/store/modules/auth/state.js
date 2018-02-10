@@ -3,6 +3,8 @@ export default {
   userDetails: {
     username: '',
     password: '',
-    admin: false
+    admin: false,
+    name: '',
+    id: 0
   }
 };
