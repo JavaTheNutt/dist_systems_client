@@ -1,14 +1,14 @@
 import http from '../http';
 import store from '../store';
-// import router from '../router';
+import router from '../router';
 import types from '../store/types';
-export const test = async () => {
-  console.log('testing backend');
-  const res = await http.get('http://localhost:3000/test');
-  console.log('res', res);
-  return res;
+export const deleteUser = async id => {
+  console.log('attempting to delete user with id', id);
+  const result = await http.delete(`http://localhost:3000/user/${id}`, {
+    auth: store.getters[types.authTypes.getters.getAuthDetails]
+  });
+  return result.status === 200;
 };
-
 export const login = async (username, password) => {
   console.log('attempting to login');
   console.log('types', types);
@@ -19,26 +19,39 @@ export const login = async (username, password) => {
   if (result.status !== 200 || !result.data || !result.data.data) return false;
   console.log('login request successful');
   const responseData = result.data.data;
-  const storeDetails = { username, password, admin: responseData.user.admin };
+  const storeDetails = { username, password, admin: responseData.user.admin, name: responseData.user.name, id: responseData.user.id };
   await store.dispatch(types.authTypes.actions.logIn, storeDetails);
   if (responseData.user.admin) handleAdmin(responseData);
   return true;
 };
-export const logOut = () => store.commit(types.authTypes.mutations.LOG_OUT);
+export const logOut = () => {
+  store.commit(types.authTypes.mutations.LOG_OUT);
+  router.push('/');
+};
 
 export const acceptAdminRequest = async id => {
   console.log('attempting to accept ', id, 'as admin');
-  const result = await http.put(`http://localhost:3000/user/${id}/setAdmin`, {
-    auth: store.getters[types.authTypes.getters.getAuthDetails]
-  });
-  console.log('result', result);
+  try {
+    const result = await http.put(`http://localhost:3000/user/${id}/setAdmin`, {
+      auth: store.getters[types.authTypes.getters.getAuthDetails]
+    });
+    console.log('result', result);
+    return result.status === 200;
+  } catch (error) {
+    return false;
+  }
 };
 export const rejectAdminRequest = async id => {
-  console.log('attempting to accept ', id, 'as admin');
-  const result = await http.put(`http://localhost:3000/user/${id}/refuseAdminRequest`, {
-    auth: store.getters[types.authTypes.getters.getAuthDetails]
-  });
-  console.log('result', result);
+  console.log('attempting to reject ', id, 'as admin');
+  try {
+    const result = await http.put(`http://localhost:3000/user/${id}/refuseAdminRequest`, {
+      auth: store.getters[types.authTypes.getters.getAuthDetails]
+    });
+    console.log('result', result);
+    return result.status === 200;
+  } catch (error) {
+    return false;
+  }
 };
 
 const handleAdmin = responseData => {
