@@ -1,7 +1,7 @@
 import namespace from '@/util/namespace';
 
 export default namespace('admin', {
-  getters: ['getAdminRequests', 'getMappedAdminRequests', 'getMappedFacilitiesRequests'],
+  getters: ['getAdminRequests', 'getMappedAdminRequests', 'getMappedFacilitiesRequests', 'hasRequests'],
   mutations: [
     'SET_ADMIN_REQUESTS',
     'RESET_ADMIN_REQUESTS',

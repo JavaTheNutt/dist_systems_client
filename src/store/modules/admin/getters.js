@@ -10,5 +10,6 @@ export default {
     mobile: elem.u_mobileNo,
     id: elem.id
   })),
+  [types.getters.hasRequests]: state => state.adminRequests.length + state.facilitiesRequests.length > 0,
   [types.getters.getMappedFacilitiesRequests]: state => state.facilitiesRequests.map(elem => ({ name: elem.f_name, id: elem.id }))
 };
