@@ -89,6 +89,7 @@
               @reset-clicked="resetForm"
             />
           </v-flex>
+
         </v-layout>
       </v-container>
     </form>
@@ -97,7 +98,8 @@
 <script>
   import SubmitFormButtonGroup from './SubmitFormButtonGroup';
   import FormMixin from '../Mixins/Form';
-  import { login } from '../service/authService';
+  import { makeLoginSignupRequest } from '../service/authService';
+  import Bus from '../events/Bus';
 
   export default {
     mixins: [FormMixin],
@@ -109,9 +111,14 @@
       async submitClicked () {
         console.log('submit clicked event caught in login form');
         this.loading = true;
-        const result = await login(this.submissionDetails.email, this.submissionDetails.password);
+        const result = await makeLoginSignupRequest(this.submissionDetails, this.createAccountTicked);
         this.loading = false;
-        if (result) this.closeClicked();
+        if (result && this.createAccountTicked) Bus.$emit('show-dialog', { card: 'create-user-card', persistent: true });
+        else if (result) this.closeClicked();
+      },
+      formSubmitted () {
+        console.log('form submission by keypress caught');
+        if (this.formValid) this.submitClicked();
       }
     },
     components: { SubmitFormButtonGroup },
@@ -121,7 +128,10 @@
         submissionDetails: {
           email: '',
           password: '',
-          requestAdminStatus: false
+          requestAdminStatus: false,
+          fname: '',
+          sname: '',
+          role: ''
         },
         createAccountTicked: false,
         confirmPassword: '',
@@ -152,7 +162,6 @@
           .filter(elem => typeof elem === 'string')
         .map(elem => elem.length)
         .reduce((index, elem) => index += elem, 0) > 0;
-        // return this.submissionDetails.email.length + this.submissionDetails.password.length + this.confirmPassword.length > 0;
       },
       formHasErrors () {
         return this.errors.any();
