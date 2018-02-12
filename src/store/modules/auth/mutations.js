@@ -21,5 +21,6 @@ export default {
       id: 0,
       name: ''
     };
-  }
+  },
+  [types.mutations.SET_NAME]: (state, name) => state.userDetails.name = name
 };
