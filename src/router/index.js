@@ -4,6 +4,7 @@ import store from '@/store';
 import types from '@/store/types';
 import ViewAdminRequests from '@/components/ViewAdminRequests';
 import Home from '@/components/Home';
+import ViewUsers from '@/components/ViewUsers';
 
 Vue.use(Router);
 const router = new Router({
@@ -12,6 +13,13 @@ const router = new Router({
       path: '/admin/requests',
       name: 'admin-requests',
       component: ViewAdminRequests,
+      meta: {
+        requiresAdmin: true
+      }
+    }, {
+      path: '/admin/users',
+      name: 'all-users',
+      component: ViewUsers,
       meta: {
         requiresAdmin: true
       }
