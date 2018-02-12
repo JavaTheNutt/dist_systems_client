@@ -9,21 +9,39 @@ export const deleteUser = async id => {
   });
   return result.status === 200;
 };
-export const login = async (username, password) => {
-  console.log('attempting to login');
-  console.log('types', types);
-  const result = await http.get('http://localhost:3000/user/login', {
-    auth: { username, password }
-  });
+
+export const makeLoginSignupRequest = async (details, isSignup = false) => {
+  console.log('attempting to', isSignup ? 'sign up' : 'login', 'user with details', details);
+  const result = isSignup ? await makeSignUpRequest(details) : await makeLoginRequest(details);
   console.log('result', result);
-  if (result.status !== 200 || !result.data || !result.data.data) return false;
+  if (result.status !== 200 || !result.data) return false;
   console.log('login request successful');
-  const responseData = result.data.data;
-  const storeDetails = { username, password, admin: responseData.user.admin, name: responseData.user.name, id: responseData.user.id };
-  await store.dispatch(types.authTypes.actions.logIn, storeDetails);
-  if (responseData.user.admin) handleAdmin(responseData);
+  console.log('response data:', result.data);
+  const resultData = {
+    user: {
+      username: details.email,
+      password: details.password,
+      admin: result.data.user.admin,
+      name: result.data.user.name,
+      id: result.data.user.id
+    },
+    adminRequests: result.data.adminRequests
+  };
+  console.log('resulting data set is', resultData);
+  return handleSuccessfulLogin(resultData);
+};
+
+const makeLoginRequest = async details => await http.get('http://localhost:3000/user/login', { auth: details });
+
+const makeSignUpRequest = async details => await http.post('http://localhost:3000/user/new', details);
+
+const handleSuccessfulLogin = async data => {
+  console.log('handling successful login with', data);
+  await store.dispatch(types.authTypes.actions.logIn, data.user);
+  if (data.user.admin) handleAdmin(data);
   return true;
 };
+
 export const logOut = () => {
   store.commit(types.authTypes.mutations.LOG_OUT);
   router.push('/');
@@ -41,6 +59,7 @@ export const acceptAdminRequest = async id => {
     return false;
   }
 };
+
 export const rejectAdminRequest = async id => {
   console.log('attempting to reject ', id, 'as admin');
   try {
