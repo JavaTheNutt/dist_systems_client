@@ -9,7 +9,16 @@ export const getFacilities = async () => {
   console.log('result', result);
   return result;
 };
-
+export const postInitialUserDetails = async details => {
+  console.log('posting', details, 'to the server');
+  const result = await http.put('http://localhost:3000/user/initial', details, {
+    auth: store.getters[types.authTypes.getters.getAuthDetails]
+  });
+  console.log('result', result);
+  const data = result.data.data;
+  store.commit(types.authTypes.mutations.SET_NAME, `${data.u_fname[0].toUpperCase()}${data.u_fname.substring(1).toLowerCase()} ${data.u_sname[0].toUpperCase()}${data.u_sname.substring(1).toLowerCase()}`);
+  return result.status === 200;
+};
 export const getPendingRequests = async () => {
   console.log('request recieved to fetch pending requests');
   const result = await http.get('http://localhost:3000/user/getAdminRequests', {
