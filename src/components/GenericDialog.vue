@@ -18,6 +18,7 @@
   import Bus from '@/events/Bus';
   import LoginCard from './LoginCard';
   import GenericAcceptRejectCard from './GenericAcceptRejectCard';
+  import CreateUserCard from './CreateUserCard';
 
   export default {
     name: 'generic-dialog',
@@ -51,7 +52,7 @@
         }
       }
     },
-    components: { LoginCard, GenericAcceptRejectCard },
+    components: { LoginCard, GenericAcceptRejectCard, CreateUserCard },
     methods: {
       cacheState (state) {
         this.cachedState.component = this.currentCard;
