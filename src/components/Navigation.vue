@@ -16,6 +16,9 @@
         <v-list-tile @click.stop="logOutClicked" id="clickSignOut">
           <v-list-tile-title >Sign Out</v-list-tile-title>
         </v-list-tile>
+        <v-list-tile @click.stop="showSettings" id="clickSettings">
+          <v-list-tile-title >Settings</v-list-tile-title>
+        </v-list-tile>
       </v-list>
       </v-menu>
     </v-toolbar>
@@ -33,6 +36,22 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Home</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click.stop="$router.push('/reservations')">
+          <v-list-tile-action>
+            <v-icon>assignment</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Reservations</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click.stop="$router.push('/facilities')">
+          <v-list-tile-action>
+            <v-icon>account_balance</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Facilities</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile v-if="admin" @click.stop="$router.push('/admin/requests')">
@@ -74,6 +93,10 @@
       },
       logOutClicked () {
         logOut();
+      },
+      showSettings () {
+        // Bus.$emit('show-dialog', { card: 'settings-card', fullscreen: true, transition: 'dialog-bottom-transition' });
+        this.$router.push('/settings');
       }
     },
     computed: {

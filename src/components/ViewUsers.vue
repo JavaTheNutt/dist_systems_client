@@ -18,7 +18,6 @@
             :items="shownUsers"
             :loading="loading"
             :search="search"
-            hide-actions
             :no-data-text="noDataText"
             class="elevation-1">
             <v-progress-circular slot="progress" color="primary" indeterminate/>
@@ -94,7 +93,8 @@
           value: 'mobile'
         }, {
           text: 'Admin?',
-          value: 'admin'
+          value: 'admin',
+          sortable: false
         }]
       };
     },

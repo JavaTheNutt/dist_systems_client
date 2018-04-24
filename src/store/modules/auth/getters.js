@@ -6,5 +6,6 @@ export default {
   [types.getters.getPassword]: state => state.userDetails.password,
   [types.getters.getAuthDetails]: state => ({ username: state.userDetails.username, password: state.userDetails.password }),
   [types.getters.getName]: state => state.userDetails.name,
-  [types.getters.getID]: state => state.userDetails.id
+  [types.getters.getID]: state => state.userDetails.id,
+  [types.getters.getMobile]: state => state.userDetails.mobile
 };

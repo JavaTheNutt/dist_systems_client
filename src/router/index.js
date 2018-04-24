@@ -5,6 +5,9 @@ import types from '@/store/types';
 import ViewAdminRequests from '@/components/ViewAdminRequests';
 import Home from '@/components/Home';
 import ViewUsers from '@/components/ViewUsers';
+import ViewFacilities from '@/components/ViewFacilities';
+import SettingsCard from '@/components/SettingsCard';
+import ViewReservations from '@/components/ViewReservations';
 
 Vue.use(Router);
 const router = new Router({
@@ -23,16 +26,35 @@ const router = new Router({
       meta: {
         requiresAdmin: true
       }
-    },
-    {
+    }, {
       path: '/',
       name: 'home',
       component: Home,
       meta: {
         requiresAuth: false
       }
-    }
-  ]
+    }, {
+      path: '/facilities',
+      name: 'view-facilities',
+      component: ViewFacilities,
+      meta: {
+        requiresAuth: true
+      }
+    }, {
+      path: '/reservations',
+      name: 'view-reservations',
+      component: ViewReservations,
+      meta: {
+        requiresAuth: true
+      }
+    }, {
+      path: '/settings',
+      name: 'change-settings',
+      component: SettingsCard,
+      meta: {
+        requiresAuth: true
+      }
+    }]
 });
 router.beforeEach((to, from, next) => {
   console.log('global authentication guard triggered');

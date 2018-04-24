@@ -5,6 +5,7 @@ export default {
     password: '',
     admin: false,
     name: '',
-    id: 0
+    id: 0,
+    mobile: ''
   }
 };

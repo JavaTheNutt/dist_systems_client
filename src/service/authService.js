@@ -2,6 +2,7 @@ import http from '../http';
 import store from '../store';
 import router from '../router';
 import types from '../store/types';
+import Bus from '../events/Bus';
 export const deleteUser = async id => {
   console.log('attempting to delete user with id', id);
   const result = await http.delete(`http://localhost:3000/user/${id}`, {
@@ -14,7 +15,7 @@ export const makeLoginSignupRequest = async (details, isSignup = false) => {
   console.log('attempting to', isSignup ? 'sign up' : 'login', 'user with details', details);
   const result = isSignup ? await makeSignUpRequest(details) : await makeLoginRequest(details);
   console.log('result', result);
-  if (result.status !== 200 || !result.data) return false;
+  if (!result || result.status !== 200 || !result.data) return false;
   console.log('login request successful');
   console.log('response data:', result.data);
   const resultData = {
@@ -23,7 +24,8 @@ export const makeLoginSignupRequest = async (details, isSignup = false) => {
       password: details.password,
       admin: result.data.user.admin,
       name: result.data.user.name,
-      id: result.data.user.id
+      id: result.data.user.id,
+      mobile: result.data.user.mobile
     },
     adminRequests: result.data.adminRequests
   };
@@ -31,11 +33,49 @@ export const makeLoginSignupRequest = async (details, isSignup = false) => {
   return handleSuccessfulLogin(resultData);
 };
 
-const makeLoginRequest = async details => await http.get('http://localhost:3000/user/login', { auth: details });
+export const makeReauthRequest = async password => {
+  try {
+    const result = await http.get('http://localhost:3000/user/login', {
+      auth: {
+        username: store.getters[types.authTypes.getters.getUsername],
+        password
+      }
+    });
+    return result;
+  } catch (error) {
+    console.log('an error has occurred while logging in', error);
+    return false;
+  }
+};
 
-const makeSignUpRequest = async details => await http.post('http://localhost:3000/user/new', details);
+const makeLoginRequest = async details => {
+  try {
+    const result = await http.get('http://localhost:3000/user/login', {
+      auth: {
+        username: details.email,
+        password: details.password
+      }
+    });
+    Bus.$emit('show-snack', { message: 'Login Succeeded', status: 'success' });
+    return result;
+  } catch (error) {
+    console.log('an error has occurred while logging in', error);
+    Bus.$emit('show-snack', { message: 'Login Failed', status: 'error' });
+    return false;
+  }
+};
 
-const handleSuccessfulLogin = async data => {
+const makeSignUpRequest = async details => {
+  try {
+    return await http.post('http://localhost:3000/user/new', details);
+  } catch (error) {
+    console.log('an error has occurred while logging in', error);
+    Bus.$emit('show-snack', { message: 'Sign up Failed', status: 'error' });
+    return false;
+  }
+};
+
+export const handleSuccessfulLogin = async data => {
   console.log('handling successful login with', data);
   await store.dispatch(types.authTypes.actions.logIn, data.user);
   if (data.user.admin) handleAdmin(data);
@@ -50,7 +90,7 @@ export const logOut = () => {
 export const acceptAdminRequest = async id => {
   console.log('attempting to accept ', id, 'as admin');
   try {
-    const result = await http.put(`http://localhost:3000/user/${id}/setAdmin`, {
+    const result = await http.put(`http://localhost:3000/user/${id}/setAdmin`, {}, {
       auth: store.getters[types.authTypes.getters.getAuthDetails]
     });
     console.log('result', result);
@@ -63,7 +103,7 @@ export const acceptAdminRequest = async id => {
 export const rejectAdminRequest = async id => {
   console.log('attempting to reject ', id, 'as admin');
   try {
-    const result = await http.put(`http://localhost:3000/user/${id}/refuseAdminRequest`, {
+    const result = await http.put(`http://localhost:3000/user/${id}/refuseAdminRequest`, {}, {
       auth: store.getters[types.authTypes.getters.getAuthDetails]
     });
     console.log('result', result);
